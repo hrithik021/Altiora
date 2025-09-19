@@ -2,12 +2,16 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "../../lib/gsap";
 
-export default function Stat({ value, prefix = "", suffix = "", label }) {
+type Props = { value: number; prefix?: string; suffix?: string; label: string };
+
+export default function Stat({ value, prefix = "", suffix = "", label }: Props) {
   const [n, setN] = useState(0);
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    let st: any; let raf = 0; let mounted = true;
+    let st: import("gsap/ScrollTrigger").ScrollTrigger | null = null;
+    let raf = 0;
+    let mounted = true;
 
     (async () => {
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
@@ -28,11 +32,11 @@ export default function Stat({ value, prefix = "", suffix = "", label }) {
       st = ScrollTrigger.create({ trigger: el, start: "top 85%", once: true, onEnter: animate });
     })();
 
-    return () => { mounted = false; if (st) st.kill(); if (raf) cancelAnimationFrame(raf); };
+    return () => { mounted = false; st?.kill(); if (raf) cancelAnimationFrame(raf); };
   }, [value]);
 
   return (
-    <div ref={ref} className="rounded-2xl border border-white/10 bg-white/5 px-6 py-5">
+    <div ref={ref} className="rounded-2xl border border-border bg-white/5 px-6 py-5">
       <div className="text-3xl font-semibold tabular-nums">{prefix}{n}{suffix}</div>
       <div className="text-white/60 text-sm mt-1">{label}</div>
     </div>
